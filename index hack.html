@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>System Alert</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: "Courier New", monospace;
+}
+
+#screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #00ff41;
+    overflow: hidden;
+}
+
+/* Hacker background */
+#matrix {
+    position: absolute;
+    inset: 0;
+    opacity: .28;
+    font-size: 12px;
+    line-height: 15px;
+    word-break: break-all;
+    color: #00ff41;
+    overflow: hidden;
+}
+
+#matrix span {
+    display: inline;
+}
+
+/* Main message */
+.content {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 25px;
+    background: radial-gradient(
+        circle,
+        rgba(0, 255, 65, .07),
+        rgba(0, 0, 0, .96) 65%
+    );
+}
+
+.warning {
+    color: #ff2020;
+    font-size: clamp(25px, 8vw, 55px);
+    font-weight: bold;
+    text-shadow: 0 0 10px red, 0 0 25px red;
+    animation: blink .7s infinite;
+    margin-bottom: 25px;
+}
+
+.message {
+    color: #00ff41;
+    font-size: clamp(16px, 4.5vw, 28px);
+    line-height: 1.5;
+    text-shadow: 0 0 8px #00ff41;
+    max-width: 700px;
+}
+
+.loading {
+    width: min(85vw, 500px);
+    height: 18px;
+    border: 2px solid #00ff41;
+    margin-top: 30px;
+    box-shadow: 0 0 12px #00ff41;
+}
+
+.bar {
+    width: 0%;
+    height: 100%;
+    background: #00ff41;
+    box-shadow: 0 0 15px #00ff41;
+    transition: width .3s;
+}
+
+.percent {
+    margin-top: 12px;
+    color: #00ff41;
+    font-size: 18px;
+}
+
+.sub {
+    margin-top: 25px;
+    color: #777;
+    font-size: 12px;
+}
+
+@keyframes blink {
+    50% { opacity: .35; }
+}
+
+#done {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    background: #000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 25px;
+}
+
+#done h1 {
+    color: #00ff41;
+    font-size: clamp(30px, 10vw, 60px);
+    text-shadow: 0 0 20px #00ff41;
+}
+
+#done p {
+    color: white;
+    margin-top: 15px;
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="screen">
+
+    <div id="matrix"></div>
+
+    <div class="content">
+
+        <div class="warning">
+            ⚠ HACKING YOUR PHONE ⚠
+        </div>
+
+        <div class="message">
+            YOUR ALL DATA ARE TRANSFERRING<br>
+            INTO ANOTHER DEVICE...
+        </div>
+
+        <div class="loading">
+            <div class="bar" id="bar"></div>
+        </div>
+
+        <div class="percent" id="percent">0%</div>
+
+        <div class="sub">
+            DO NOT CLOSE THIS WINDOW...
+        </div>
+
+    </div>
+
+    <div id="done">
+        <h1>😂 JUST A PRANK!</h1>
+        <p>Your phone was never hacked.</p>
+    </div>
+
+</div>
+
+<script>
+// Fake hacker text
+const matrix = document.getElementById("matrix");
+
+const chars =
+"01ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%@&*<>[]{}";
+
+function generateCode() {
+    let text = "";
+
+    for (let i = 0; i < 2500; i++) {
+        text += chars[Math.floor(Math.random() * chars.length)];
+
+        if (i % 90 === 0) {
+            text += "<br>";
+        }
+    }
+
+    matrix.innerHTML = text;
+}
+
+generateCode();
+
+// Keep changing background
+setInterval(generateCode, 500);
+
+// Try browser fullscreen
+function goFullscreen() {
+    const el = document.documentElement;
+
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => {});
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+}
+
+document.addEventListener("click", goFullscreen);
+window.addEventListener("load", () => {
+    setTimeout(goFullscreen, 500);
+});
+
+// Fake loading
+const bar = document.getElementById("bar");
+const percent = document.getElementById("percent");
+const done = document.getElementById("done");
+
+let progress = 0;
+
+const loading = setInterval(() => {
+
+    progress += Math.floor(Math.random() * 4) + 1;
+
+    if (progress >= 100) {
+        progress = 100;
+        clearInterval(loading);
+
+        setTimeout(() => {
+            document.querySelector(".content").style.display = "none";
+            matrix.style.display = "none";
+            done.style.display = "flex";
+
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }, 1200);
+    }
+
+    bar.style.width = progress + "%";
+    percent.textContent = progress + "%";
+
+}, 1800);
+</script>
+
+</body>
+</html>
